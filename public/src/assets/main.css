@@ -4,10 +4,20 @@ body{
 .chat-box{
     border:1px solid #c5c5c5;
     background-color: #f5f3f3;
-    margin: 0px 150px;
+    margin: 0px 0px;
     min-height: 600px;
     max-height: 600px;
     overflow-y: scroll;
+}
+.user-list {
+    border: 1px solid lightgrey;
+    padding: 10px 40px;
+    margin: 5px;
+    background-color: #ddd;
+    border-radius: 6px;
+}
+.user-list span{
+    font-size: 12px;
 }
 .chat {
     border-radius: .4em;
