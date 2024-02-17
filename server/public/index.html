@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Chatting</h1>
+    <input type="text" id="message" placeholder="Message ...">
+    <button id="sendBtn">Send</button>
+    <div style="border:1px solid black; height:300px;width:100%; margin-top:10px;" id="allmessage"></div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        
+        const socket = io({path: '/chat/socket.io', serveClient: false});
+        const sendBtn = document.getElementById('sendBtn');
+        const messageInput = document.getElementById('message');
+        const allmessage = document.getElementById('allmessage');
+
+        socket.on("message", (data) => {
+            if(data.id == socket.id){
+                allmessage.innerHTML += "<div style='color:red;'>"+data.message+"</div>";
+            } else {
+                allmessage.innerHTML += "<div style='color:green;'>"+data.message+"</div>";
+            }
+        });
+
+        sendBtn.addEventListener("click", (e) => {
+            socket.emit('user-message', messageInput.value);
+        });
+
+      </script>
+</body>
+</html>
+
+
+message
+id
+from
+to
+channel_id
+is_read
+
+channel
+id
+user_one
+user_two
