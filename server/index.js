@@ -28,9 +28,10 @@ io.on('connection', (socket) => {
     console.log('socket connected')
     socket.on("user-message", (data) => {
         saveMessage(data);
+        console.log(data.message.from);
         const abc = {
             msg : data.message,
-            id: socket.id
+            id: data.message.to
         }
         io.emit('message', abc);
     });

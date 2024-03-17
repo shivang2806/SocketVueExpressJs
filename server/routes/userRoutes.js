@@ -20,8 +20,8 @@ const corsOptions = {
 router.get('/', cors(corsOptions), getUsers);
 router.get('/chatList', cors(corsOptions), getUserChatList);
 router.get('/messageList', cors(corsOptions), getmessageList);
-router.post('/register', registerUser);
-router.post('/login', loginuser);
+router.get('/register', cors(corsOptions), registerUser);
+router.get('/login', cors(corsOptions), loginuser);
 router.post('/saveMessageData', saveMessageData);
 router.get('/current', validateToken, currentUsers);
 

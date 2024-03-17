@@ -9,6 +9,13 @@ body{
     max-height: 600px;
     overflow-y: scroll;
 }
+.login-box{
+    border:1px solid #c5c5c5;
+    background-color: #f5f3f3;
+    margin: 0px 0px;
+    min-height: 600px;
+    max-height: 600px;
+}
 .user-list {
     border: 1px solid lightgrey;
     padding: 10px 40px;

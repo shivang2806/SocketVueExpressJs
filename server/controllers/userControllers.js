@@ -9,12 +9,17 @@ const jwt = require("jsonwebtoken");
 //@access public
 
 const getUsers = asyncHandler( async (req, res) => {
-    const users = await User.find();
+    const {fromUser} = req.query;
+    if(!fromUser){
+        res.status(400);
+        throw new Error("Current User required");
+    }
+    const users = await User.find({ _id: { $ne: fromUser } });
     res.status(200).json(users);
 });
 
 const getUserChatList = asyncHandler( async (req, res) => {
-    const users = await User.find();
+    const users = await User.find({ _id: { $ne: '65f6cefaacb5bba492544f23' } });
     res.status(200).json(users);
 });
 
@@ -23,16 +28,20 @@ const getmessageList = asyncHandler( async (req, res) => {
     const {from, to} = req.query;
     if(!from || !to){
         res.status(400);
-        throw new Error("All fields are required");
+        throw new Error("from& to user require");
     }
 
-    const Messages = await Message.find();
+    const Messages = await Message.find({
+        $or: [
+          { to: { $in: [from, to] } },
+          { from: { $in: [from, to] } }
+        ]
+      });
     res.status(200).json(Messages);
 });
 
 const registerUser = asyncHandler( async (req, res) => {
-    
-    const {username, email, password} = req.body;
+    const {username, email, password} = req.query;
     if(!username || !email || !password){
         res.status(400);
         throw new Error("All fields are required");
@@ -69,7 +78,7 @@ const saveMessageData = asyncHandler( async (req, res) => {
 });
 
 const loginuser = asyncHandler( async (req, res) => {
-    const {username, email, password} = req.body;
+    const {username, email, password} = req.query;
     if(!username || !email || !password){
         res.status(400);
         throw new Error("All fields are required");
@@ -79,8 +88,8 @@ const loginuser = asyncHandler( async (req, res) => {
         res.status(404);
         throw new Error("User Not Found");
     }
-
     if(user && ( bcrypt.compareSync(password, user.password))){
+
         const accessToken = jwt.sign(
             {
                 user:{
@@ -89,9 +98,11 @@ const loginuser = asyncHandler( async (req, res) => {
                     id: user.id,
                 }
             },
-            process.env.ACCESS_TOKEN,
+            // process.env.ACCESS_TOKEN,
+            "Shivang",
             {expiresIn: '10m'}
         );
+
         res.status(200).json({accessToken});
     } else {
         res.status(404).json('credentials not match');

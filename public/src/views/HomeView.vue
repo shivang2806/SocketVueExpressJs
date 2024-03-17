@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="">
-        <h2 class="title is-2" style="margin: 10px 150px;">Chat App</h2>
+        <h2 class="title is-2" style="margin: 10px 150px;">Chat App : Hello {{ this.current_user_data.username }}</h2>
         <div class="row">
           <div class="col-md-1"></div>
           <div class="col-md-2">
@@ -17,7 +17,7 @@
                 <div>
                     <div class="chat" v-for="m in msgs" :key="m.type">
                       <div :class="{'text-left d1' : m.to==toUser, 'text-right d1': m.from == fromUser}">
-                        <span :class="{'message-left' : m.to==toUser, 'message-right': m.from == fromUser}">{{m.message}}</span>
+                        <span :class="{'message-left' : m.to==fromUser, 'message-right': m.from == fromUser}">{{m.message}}</span>
                       </div>
                     </div>
                     <div class="clr"></div>
@@ -44,14 +44,19 @@
 <script>
 
 import io from 'socket.io-client';
-import axios from 'axios'
+import axios from 'axios';
+import VueJwtDecode from 'vue-jwt-decode'
+
+
 
 export default {
     data() {
       return {
         messageVal : "",
-        fromUser : "65d0fcb73fa6d7f605f3323b",
+        fromUser : "",
         toUser : "",
+        accesstoken : "",
+        current_user_data : {},
         user_name : "",
         form_data : {
             from : '',
@@ -67,13 +72,21 @@ export default {
       this.socket.on('message', (data) => {
         this.getMessage(data)
       });
-      this.getList();
+      
+      this.accesstoken = localStorage.getItem('accessToken');
+      if(this.accesstoken != null){
+        this.current_user_data = VueJwtDecode.decode(this.accesstoken);
+        this.fromUser = this.current_user_data.user.id;
+        this.current_user_data = this.current_user_data.user;        
+        this.getList();
+      }
       
     },
     updated() {
         this.updateScroll();
     },
     methods: {
+
         sendMessage() {
             this.socket.emit('user-message', {
               message: { message: this.messageVal, to: this.toUser, from: this.fromUser }
@@ -85,7 +98,8 @@ export default {
             this.messageVal = "";
         },
         getMessage(Data) {
-          if(Data.msg.id != this.socket.id){
+          console.log(Data);
+          if(Data.id != this.form_data.to){
             this.msgs.push({
                 type: 'l',
                 msg: Data.msg.message
@@ -96,7 +110,12 @@ export default {
           window.scrollTo(0,document.body.scrollHeight)
         },
         async getList() {
-            this.userList = await axios.get(`http://localhost:9000/api/users/`)
+            this.userList = await axios.get(`http://localhost:9000/api/users/`,
+            { 
+              params: {
+                fromUser : this.fromUser
+              }
+            })
             this.userList = this.userList.data;
         },
         async getUserId(id, user_name){
@@ -116,6 +135,7 @@ export default {
           this.msgs = this.msgs.data;
           console.log(this.msgs);
         }
+
     }
   }
 
