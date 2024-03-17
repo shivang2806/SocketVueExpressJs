@@ -92,17 +92,18 @@ export default {
               message: { message: this.messageVal, to: this.toUser, from: this.fromUser }
             });
             this.msgs.push({
-                type: "r",
-                msg: this.messageVal
+              'from': this.fromUser,
+              'to': this.toUser,
+              'message': this.messageVal
             });
             this.messageVal = "";
         },
         getMessage(Data) {
-          console.log(Data);
           if(Data.id != this.form_data.to){
             this.msgs.push({
-                type: 'l',
-                msg: Data.msg.message
+              'from': Data.msg.from,
+              'to': Data.msg.to,
+              'message': Data.msg.message
             });
           }
         },
@@ -125,7 +126,6 @@ export default {
             from : this.fromUser,
             to : this.toUser
           },
-          console.log(this.form_data);
           this.msgs = await axios.get(`http://localhost:9000/api/users/messageList`, {
             params: {
               from : this.fromUser,
@@ -133,7 +133,6 @@ export default {
             }
           })
           this.msgs = this.msgs.data;
-          console.log(this.msgs);
         }
 
     }
